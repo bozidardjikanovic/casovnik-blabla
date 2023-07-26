@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bozidar Djikanovic Casovnik!</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #my-canvas {
+            border: #cacaca 1px solid;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="my-canvas" width="400" height="400">
+        Your web browser does not support the canvas element.
+    </canvas>
+    <script>
+        window.onload = draw;
+
+        function draw() {
+            let myCanvas = document.getElementById("my-canvas");
+            if (myCanvas.getContext) {
+                let ctx = myCanvas.getContext('2d');
+                update(ctx);
+            } else {
+                alert("Canvas is not supported.");
+            }
+        }
+
+        function update(ctx) {
+            const date = new Date();
+            const hours = date.getHours() % 12;
+            const minutes = date.getMinutes();
+            const seconds = date.getSeconds();
+
+            ctx.clearRect(0, 0, 400, 400);
+
+            // Draw clock face
+            ctx.beginPath();
+            ctx.arc(200, 200, 180, 0, 2 * Math.PI);
+            ctx.strokeStyle = "#cacaca";
+            ctx.lineWidth = 10;
+            ctx.stroke();
+
+            // Draw numbers
+            ctx.font = "20px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            for (let i = 1; i <= 12; i++) {
+                const angle = (i - 3) * (Math.PI / 6);
+                const x = 200 + 140 * Math.cos(angle);
+                const y = 200 + 140 * Math.sin(angle);
+                ctx.fillText(i, x, y);
+            }
+
+            // Draw hour hand
+            const hourAngle = ((hours - 3) * (2 * Math.PI / 12)) + ((minutes / 60) * (2 * Math.PI / 12));
+            drawHand(ctx, hourAngle, 80, 10, "#000000"); // Black
+
+            // Draw minute hand
+            const minuteAngle = ((minutes - 15) * (2 * Math.PI / 60)) + ((seconds / 60) * (2 * Math.PI / 60));
+            drawHand(ctx, minuteAngle, 120, 6, "#444444"); // Dark Gray
+
+            // Draw second hand
+            const secondAngle = (seconds - 15) * (2 * Math.PI / 60);
+            drawHand(ctx, secondAngle, 150, 3, "#FF0000"); // Red
+
+            requestAnimationFrame(function () {
+                update(ctx);
+            });
+        }
+
+        function drawHand(ctx, angle, length, width, color) {
+            ctx.save();
+            ctx.translate(200, 200);
+            ctx.rotate(angle);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -length);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.stroke();
+            ctx.restore();
+        }
+    </script>
+</body>
+</html>
